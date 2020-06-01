@@ -32,11 +32,11 @@ class Twitter(http.Controller):
                 [('website_id', '=', request.website.id),
                  ('screen_name', '=', screen_name)],
                 limit=int(limit), order="tweet_id desc")
-        if len(tweets) < 12:
-            if debug:
-                return {"error": _("Twitter user @%(username)s has less than 12 favorite tweets. "
-                                   "Please add more or choose a different screen name.") % \
-                                      {'username': screen_name}}
-            else:
-                return []
+        # if len(tweets) < 12:
+        #     if debug:
+        #         return {"error": _("Twitter user @%(username)s has less than 12 favorite tweets. "
+        #                            "Please add more or choose a different screen name.") % \
+        #                               {'username': screen_name}}
+        #     else:
+        #         return []
         return tweets.mapped(lambda t: json.loads(t.tweet))

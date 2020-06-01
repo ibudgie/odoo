@@ -53,12 +53,17 @@ class WebsiteTwitter(models.Model):
                 _logger.debug("Skip fetching favorite tweets for unconfigured website %s", website)
                 continue
             params = {'screen_name': website.twitter_screen_name}
+            GET_USER_URL = "https://api.twitter.com/1.1/users/show.json"
+            user_info = self._request(website, GET_USER_URL, params=params)
+            user_id =  user_info['id']
+            params = {'user_id': user_id}
             last_tweet = WebsiteTweets.search([('website_id', '=', website.id),
-                                                     ('screen_name', '=', website.twitter_screen_name)],
-                                                     limit=1, order='tweet_id desc')
+                                               ('screen_name', '=', website.twitter_screen_name)],
+                                               limit=1, order='tweet_id desc')
             if last_tweet:
                 params['since_id'] = int(last_tweet.tweet_id)
             _logger.debug("Fetching favorite tweets using params %r", params)
+            REQUEST_FAVORITE_LIST_URL="https://api.twitter.com/1.1/statuses/user_timeline.json"
             response = self._request(website, REQUEST_FAVORITE_LIST_URL, params=params)
             for tweet_dict in response:
                 tweet_id = tweet_dict['id']  # unsigned 64-bit snowflake ID
